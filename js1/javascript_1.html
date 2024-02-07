@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ch_hant">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>simpleCalculator</title>
+</head>
+<body>
+    <input type="text" id="input">
+    <button onclick="add()">+</button>
+    <button onclick="subtract()">-</button>
+    <div id="result"></div>
+    <script language="javascript">
+        let input = document.getElementById('input');
+        let result = document.getElementById('result');
+
+        function add() {
+            let numbers = input.value.split(",");
+            let sum = Number(numbers[0]) + Number(numbers[1]);
+            result.innerHTML = sum;
+        }
+
+        function subtract() {
+            let numbers = input.value.split(",");
+            let difference = Number(numbers[0]) - Number(numbers[1]);
+            result.innerHTML = difference;
+        }
+    </script>
+   
+    
+</body>
+</html>

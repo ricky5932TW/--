@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜數字遊戲</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>猜數字遊戲</h1>
+        <select id="range">
+            <option value="10">0-10</option>
+            <option value="50">0-50</option>
+            <option value="100">0-100</option>
+        </select>
+        <br>
+        <input type="text" id="guess" disabled>
+        <button id="start" onclick="startGame()">Start</button>
+        <button id="guessBtn" onclick="guessNumber()" disabled>猜</button>
+        <br>
+        <input type="text" id="nameText" placeholder="輸入姓名">
+        <button id="saveRecord" onclick="saveRecord()" disabled>保存記錄</button>
+        <button id="showRecord" onclick="showRecord()">顯示記錄</button>
+        <br>
+        <h3>hint</h3>
+        <div id="hint"></div>
+        <h3>guesscounter</h3>
+        <p id="guessCount"></p>
+        <h3>timer</h3>
+        <p id="timer"></p>
+        <h3>records</h3>
+        <div id="records"></div>
+    </div>
+
+    <script language="javascript">
+        let answer;
+        let guessCount = 0;
+        let timer;
+        let startTime;
+        window.upper;
+        window.lower;
+        let recordDict = {};
+
+        // 啟動遊戲
+        function startGame() {
+            let range = document.getElementById("range");
+            answer = generateRandomNumber(parseInt(range.value));
+            document.getElementById("guess").disabled = false;
+            document.getElementById("guessBtn").disabled = false;
+            document.getElementById("start").disabled = true;
+            document.getElementById("hint").textContent = "";
+            document.getElementById("guessCount").textContent = "";
+            startTime = new Date().getTime();
+            timer = setInterval(updateTimer, 1);
+            window.lower = 0;
+            window.upper = parseInt(range.value);
+            guessCount = 0;
+            document.getElementById("saveRecord").disabled = true;
+        }
+
+        // 生成指定範圍內的隨機數字
+        function generateRandomNumber(max) {
+            return Math.floor(Math.random() * (max + 1));
+        }
+
+        // 更新計時器
+        function updateTimer() {
+            let currentTime = new Date().getTime();
+            let elapsedTime = Math.floor((currentTime - startTime));
+            document.getElementById("timer").textContent = elapsedTime / 1000 + " 秒";
+        }
+
+        // 猜數字
+        function guessNumber() {
+            let guess = document.getElementById("guess").value;
+            guessCount++;
+            let hint = document.getElementById("hint");
+            let guessCountElement = document.getElementById("guessCount");
+
+            if (guess < 0 || guess > parseInt(range.value)) {
+                hint.textContent = "Out of range";
+                } else if (guess == answer) {
+                    hint.textContent = "bingo";
+                    clearInterval(timer);
+                    document.getElementById("guess").disabled = true;
+                    document.getElementById("guessBtn").disabled = true;
+                    document.getElementById("start").disabled = false;
+                    guessCountElement.textContent = "猜測次數: " + guessCount;
+                    document.getElementById("saveRecord").disabled = false;
+                } else if (guess < answer) {
+                    window.lower = guess;
+                    hint.textContent = window.lower + " < answer < " + window.upper;
+                } else if (guess > answer) {
+                    window.upper = guess - 1;
+                    hint.textContent = window.lower + " < answer < " + window.upper;
+                }
+                guessCountElement.textContent = "猜測次數: " + guessCount;
+    }
+
+    function recorder(difficulty, timer, counter) {
+        var mode 
+        switch (difficulty) {
+            case "10":
+                mode = "easy";
+                break;
+            case "50":
+                mode = "normal";
+                break;
+            case "100":
+                mode = "hard";
+                break;
+        }
+        let record = {
+            difficulty: mode,
+            time: timer,
+            guess: counter
+        };
+        return record;
+    }
+
+    // 保存記錄
+    function saveRecord() {
+        let nameText = document.getElementById("nameText").value;
+        let difficulty = document.getElementById("range").value;
+        let elapsedTime = document.getElementById("timer").textContent;
+
+        if (nameText.trim() !== "") {
+            recordDict[nameText] = recorder(difficulty, elapsedTime, guessCount);
+            document.getElementById("saveRecord").disabled = true;
+        }
+    }
+
+    // 顯示記錄
+    function showRecord() {
+        let nameText = document.getElementById("nameText").value;
+        let recordsElement = document.getElementById("records");
+        recordsElement.innerHTML = "";
+
+        if (nameText.trim() === "") {
+            for (let key in recordDict) {
+                recordsElement.innerHTML += key + ": " + formatRecord(recordDict[key]) + "<br>";
+            }
+        } else {
+            if (recordDict.hasOwnProperty(nameText)) {
+                recordsElement.innerHTML = nameText + ": " + formatRecord(recordDict[nameText]);
+            } else {
+                recordsElement.innerHTML = "未找到相關記錄";
+            }
+        }
+    }
+
+    // 格式化記錄
+    function formatRecord(record) {
+        return "<br> 難易度: " + record.difficulty + "<br> 猜測次數: " + record.guess + "<br>  時間: " + record.time;
+    }
+</script>
+</body>
+</html>

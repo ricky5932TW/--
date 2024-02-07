@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="./styles/shoppingCart.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+</head>
+<body >
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <nav class="navbar navbar-expand-lg sticky-top" data-bs-theme="dark" >
+      <div class="container-fluid">
+          <a class="navbar-brand" href="./index.html" style="font-size: 2.0rem;">
+              <img src="./image/圖片37.png" alt="Logo" width="54" height="45" class="d-inline-block align-text-top">
+              文山包種茶行
+          </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link active" aria-current="page" href="./index.html">Home</a>
+            <a class="nav-link" href="./shop.html">shop</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  introduction
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="introMenu.html">Introduction</a></li>
+                <li><a class="dropdown-item" href="introMenu.html">Processing</a></li>
+                <li><a class="dropdown-item" href="introMenu.html">Others</a></li>
+              </ul>
+             </li>
+            <a class="nav-link" href="#">about us</a>
+            <a class="nav-link" href="./login.html" style="position: relative; left: 230%;">log in | sign in</a>
+            <a class="nav-link" href="./shoppingCart.html" style="position: relative; left: 190%;">購物車</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div id="app">
+      <table>
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr v-for="product in productList" v-bind:key="product.id">
+                  <td>{{ product.id }}</td>
+                  <td>{{ product.name }}</td>
+                  <td>{{ product.price }}</td>
+                  <td>
+                      <button :disabled="product.quantity === 0" @click="product.quantity -= 1">-</button>
+                      {{ product.quantity }}
+                      <button @click="product.quantity += 1">+</button>
+                  </td>
+                  <td>
+                      <button @click="removeProduct(product.id)">Remove</button>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+      <p>Total Price: $ {{ totalPrice }}</p>
+  </div>
+
+  <script>
+      let vm = new Vue({
+          el: '#app',
+          data: {
+              productList: [
+                  { id: 1, name: 'Product A', price: 10, quantity: 0 },
+                  { id: 2, name: 'Product B', price: 20, quantity: 0 },
+                  { id: 3, name: 'Product C', price: 30, quantity: 0 },
+              ]
+          },
+          computed: {
+              totalPrice: function () {
+                  let total = 0;
+                  for (let i = 0; i < this.productList.length; i++) {
+                      total += this.productList[i].price * this.productList[i].quantity;
+                  }
+                  return total;
+              }
+          },
+          methods: {
+              removeProduct: function (id) {
+                  for (let i = 0; i < this.productList.length; i++) {
+                      if (this.productList[i].id === id) {
+                          this.productList.splice(i, 1);
+                          break;
+                      }
+                  }
+              }
+          }
+      });
+  </script>
+</body>
+</html>

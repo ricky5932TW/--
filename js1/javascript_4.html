@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地雷遊戲</title>
+    <style>
+        button {
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body oncontextmenu="window.event.returnValue=false">
+    <div id="mineArea"></div>
+    <input type="button" value="start" id ="startButton" onclick="start()">
+    <span id="timer">0</span> 秒
+    <span id="flagCount">10</span> 剩餘旗子
+
+    <script>
+        let timer;
+        let startTime;
+        let mineCount = 10;
+        let correctFlagCount = 0;
+
+
+        function start() {
+            clearTimeout(timer);
+            document.getElementById("mineArea").innerHTML = "";
+            generateButtons(10, 10, 10);
+            mineCount = 10;
+            updateFlagCount(mineCount);
+            startTime = new Date().getTime();
+            startTimer();
+            document.getElementById("startButton").disabled = true;
+        }
+
+
+        function startTimer() {
+            timer = setInterval(function () {
+                const now = new Date().getTime();
+                const elapsedTime = Math.floor((now - startTime) / 1000);
+                document.getElementById("timer").innerText = elapsedTime;
+            }, 1000);
+        }
+
+        function updateFlagCount(count) {
+            document.getElementById("flagCount").innerText = count;
+        }
+
+        function generateButtons(height, width, mineAmount) {
+            let mineArea = document.getElementById("mineArea");
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    let button = document.createElement("input");
+                    button.type = "button";
+                    button.id = i + "-" + j;
+                    button.value = " ";
+                    button.style = "width: 30px; height: 30px;";
+                    button.disabled = false;
+                    button.setAttribute("onclick", "leftClicked(this)");
+                    button.setAttribute("oncontextmenu", "rightClicked(this)");
+                    mineArea.appendChild(button);
+                }
+                mineArea.innerHTML += "<br>";
+            }
+
+            for (let i = 0; i < mineAmount; i++) {
+                let x = Math.floor(Math.random() * height);
+                let y = Math.floor(Math.random() * width);
+                let button = document.getElementById(x + "-" + y);
+                if (button.hint != "X") {
+                    button.hint = "X";
+                } else
+                {
+                i--;
+            }
+        }
+    }
+
+    function rightClicked(button) {
+        if (button.value == " " && mineCount > 0) {
+            button.value = "F";
+            mineCount--;
+            if (button.hint === "X") {
+                correctFlagCount++;
+            }
+        } else if (button.value == "F") {
+            button.value = " ";
+            mineCount++;
+            if (button.hint === "X") {
+                correctFlagCount--;
+            }
+        }
+        updateFlagCount(mineCount);
+    }
+
+    function leftClicked(button) {
+        if (button.hint == "X") {
+            alert("失敗了！");
+            location.reload();
+        } else {
+            button.disabled = true;
+            let x = button.id.split("-")[0];
+            let y = button.id.split("-")[1];
+            let count = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+                    let neighbor = document.getElementById((Number(x) + i) + "-" + (Number(y) + j));
+                    if (neighbor != null && neighbor.hint == "X") {
+                        count++;
+                    }
+                }
+            }
+            button.value = count;
+
+            let allButtons = document.querySelectorAll("input[type='button']");
+            let unclearedTiles = 0;
+            for (let i = 0; i < allButtons.length; i++) {
+                if (!allButtons[i].disabled) {
+                    unclearedTiles++;
+                }
+            }
+            if (unclearedTiles === 10) {
+                alert("恭喜你，成功了！");
+                location.reload();
+            }
+        }
+    }
+</script>
+</body>
+</html>
